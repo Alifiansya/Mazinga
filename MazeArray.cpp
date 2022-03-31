@@ -63,32 +63,24 @@ void maze_print(){
 }
 
 void move(ListNode *p, int x, int y, int steps){
-	// cout << x << y;
-	if(p == NULL) cout << " LOL";
-	cout << p -> val;
-	cout << steps << endl;
-	maze_print();
-	cout << endl;
-
 	if(x == finishX && y == finishY){
-		if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
 		return;
 	}
 
 	if(p == NULL){
-		cout << 2;
-		cout << "tes";
+
 		p = move_list.head;
 		if (maze[x][y] == "[OO]"){
 			if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
+			else maze[x][y] = "[" + to_string(++steps) + "]";
 		}
-		
 		move(p, mundurX.pop(), mundurY.pop(), steps);
 	}
 
 	else if(p -> val == "UP"){
 		if(y+1 < maze_size && maze[x][y+1] == "[OO]"){
-			if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
+			if(steps < 9) maze[x][y+1] = "[0" + to_string(++steps) + "]";
+			else maze[x][y+1] = "[" + to_string(++steps) + "]";
 			// cout << maze[x][y];
 			mundurX.push(x);
 			mundurY.push(y);		
@@ -100,7 +92,8 @@ void move(ListNode *p, int x, int y, int steps){
 	}
 	else if(p -> val == "DOWN"){
 		if(y-1 >= 0 && maze[x][y-1] == "[OO]"){
-			if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
+			if(steps < 9) maze[x][y-1] = "[0" + to_string(++steps) + "]";
+			else maze[x][y-1] = "[" + to_string(++steps) + "]";
 			// cout << maze[x][y];
 			mundurX.push(x);
 			mundurY.push(y);
@@ -111,7 +104,8 @@ void move(ListNode *p, int x, int y, int steps){
 	}
 	else if(p -> val == "LEFT"){
 		if(x-1 >= 0 && maze[x-1][y] == "[OO]"){
-			if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
+			if(steps < 9) maze[x-1][y] = "[0" + to_string(++steps) + "]";
+			else maze[x-1][y] = "[" + to_string(++steps) + "]";
 			// cout << maze[x][y];
 			mundurX.push(x);
 			mundurY.push(y);
@@ -122,7 +116,8 @@ void move(ListNode *p, int x, int y, int steps){
 	}
 	else if(p -> val == "RIGHT"){
 		if(x+1 < maze_size && maze[x+1][y] == "[OO]"){
-			if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
+			if(steps < 9) maze[x+1][y] = "[0" + to_string(++steps) + "]";
+			else maze[x+1][y] = "[" + to_string(++steps) + "]";
 			// cout << maze[x][y];
 			mundurX.push(x);
 			mundurY.push(y);
@@ -131,7 +126,7 @@ void move(ListNode *p, int x, int y, int steps){
 		}
 		else move(p -> next, x, y, steps);
 	}
-	cout << 20;
+	// cout << 20;
 }
 
 
@@ -162,7 +157,8 @@ int main(){
 	move_list.remove_first();
 
 	ListNode *p = move_list.head;
-	move(p, startX, startY, 0);
+	maze[startX][startY] = "[01]";
+	move(p, startX, startY, 1);
 
 	maze_print();
 }
