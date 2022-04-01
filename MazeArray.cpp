@@ -1,7 +1,8 @@
 #include <iostream>
 #include <sstream>
-#include "DoublyLinkedList.cpp"
-#include "StackList.cpp"
+#include "DoublyLinkedList.h"
+#include "StackList.h"
+#include "Queue.h"
 using namespace std;
 
 string maze[100][100];
@@ -12,6 +13,8 @@ int startY;
 int finishX;
 int finishY;
 
+int steps = 1;
+int steps_finish;
 Stack mundurX, mundurY;
 DoublyLinkedList move_list;	
 
@@ -64,11 +67,11 @@ void maze_print(){
 
 void move(ListNode *p, int x, int y, int steps){
 	if(x == finishX && y == finishY){
+		steps_finish = steps;
 		return;
 	}
 
 	if(p == NULL){
-
 		p = move_list.head;
 		if (maze[x][y] == "[OO]"){
 			if(steps < 9) maze[x][y] = "[0" + to_string(++steps) + "]";
@@ -126,14 +129,26 @@ void move(ListNode *p, int x, int y, int steps){
 		}
 		else move(p -> next, x, y, steps);
 	}
-	// cout << 20;
+	// cout << steps;
 }
 
+string maze_to_string(){
+	string str;
+	for(int i = maze_size-1; i >= 0  ; i--){
+		for(int j = 0; j < maze_size; j++){
+			str += maze[j][i];
+		}
+		str += "\n";
+	}
+	return str;
+}
 
 int main(){
 	//input
-	int peserta;
-	string jalur, gerak;
+	int banyak_peserta;
+	string jalur, gerak, nama;
+	Queue maze_peserta;
+	DoublyLinkedList ranking_nama, ranking_steps;
 	
 
 	cin >> maze_size;
@@ -151,14 +166,39 @@ int main(){
 	finishY = y[jalur_size-1];
 	maze_init(maze_size, x, y, jalur_size);	
 
-	getline(cin >> ws, gerak);
-	tokenize(gerak, ' ', move_list);
-	string nama = move_list.head->val;
-	move_list.remove_first();
+	cin >> banyak_peserta;
+	ListNode *p;	
 
-	ListNode *p = move_list.head;
-	maze[startX][startY] = "[01]";
-	move(p, startX, startY, 1);
+	for(int i = 0; i < banyak_peserta; i++){
+		getline(cin >> ws, gerak);
+		tokenize(gerak, ' ', move_list);
+		nama = move_list.head->val;
+		move_list.remove_first();
 
-	maze_print();
+		p = move_list.head;
+		maze[startX][startY] = "[01]";
+		move(p, startX, startY, steps);
+
+		// cout << maze_to_string();
+
+		maze_peserta.enqueue(steps_finish, nama, maze_to_string());
+		move_list.make_empty();
+		maze_init(maze_size, x, y, jalur_size);
+		// maze_print();
+		steps = 1;
+	}
+
+	maze_peserta.sort();
+	while(!maze_peserta.is_empty()){
+		cout << maze_peserta.front->nama << endl;
+		cout << maze_peserta.front->maze << endl;
+		ranking_nama.add_last(maze_peserta.front -> nama);
+		ranking_steps.add_last(to_string(maze_peserta.front -> steps));
+		maze_peserta.dequeue();
+	}
+	cout << "Winner ";
+	for(ListNode *listq = ranking_steps.head, *listp = ranking_nama.head; listp != NULL; listp = listp -> next){
+		cout << listp -> val << " " << listq -> val << " steps" << endl;
+		listq = listq -> next;
+	}
 }
